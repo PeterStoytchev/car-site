@@ -21,7 +21,18 @@ def sqlfetch(query, cursor=-1):
 @app.route("/brands", methods=["GET"])
 def getbrands():
     data = sqlfetch(f"""SELECT * FROM brands""")
-    return jsonify(data)
+    ids = []
+    names = []
+
+    for x in data:
+        ids.append(x[0])
+        names.append(x[1])
+
+    return jsonify(
+    {
+        "ids": ids,
+        "names": names
+    })
 
 
 @app.route("/models/<brand_id>", methods=["GET"])
@@ -52,11 +63,27 @@ def getcarlist(brand_id):
     for x in models:
         data = sqlfetch(f"""SELECT adid,model,year,km FROM cars WHERE model = {x[0]}""", cursor)
         for y in data:
-            cars.append(y)
+            img = sqlfetch(f"""SELECT imgsrc FROM imglist WHERE adid = {y[0]} ORDER BY imgid ASC""", cursor)[0][0]
+            cars.append(
+                {
+                    "id": y[0],
+                    "model": y[1],
+                    "year": y[2],
+                    "km": y[3],
+                    "img": img
+                })
 
 
     return jsonify(cars)
 
+
+@app.route("/brandfromad/<id>")
+def getcarfrombrand(id):
+    cursor = db.cursor()
+    modelid = sqlfetch(f"""SELECT model FROM cars WHERE adid = {id}""", cursor)[0][0]
+    brandid = sqlfetch(f"""SELECT brand FROM models WHERE modelid = {modelid}""", cursor)[0][0]
+
+    return jsonify({"brandid": brandid})
 
 @app.route("/car/<id>", methods=["GET"])
 def getcar(id):
@@ -127,4 +154,4 @@ def uploadimg():
     return "200"
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0")
+    app.run(debug=True, host="0.0.0.0", port=5001)

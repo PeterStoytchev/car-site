@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Page Title</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='/static/main.css'>
+</head>
+<body>
+    {% block content %}
+    <div style="width: 50%; margin: auto">
+        <h3>Brand: {{brand}}</h3>
+        <h3>Model: {{car["model"]}}</h3>
+        <h3>Year: {{car["year"]}}</h3>
+        <h3>KM: {{car["km"]}}</h3>
+
+        <br>
+        <h3>Description by the owner</h3>
+        <p>{{car["cardescr"]}}</p>
+
+        <br>
+        <h3>Pictures</h3>
+
+        {% for img in car["imgs"] %}
+        <img src={{img}} width="960" height="540">
+        {% endfor %}
+    </div>
+    {% endblock %}
+</body>
+</html>
