@@ -1,13 +1,23 @@
+import os
 import mysql.connector
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
+"""
 db = mysql.connector.connect(
     host = "192.168.1.10",
     user = "yoship",
     password = "ffx1v1sagoodgame",
     database = "carsite"
+)
+"""
+
+db = mysql.connector.connect(
+    host= os.environ["dbHost"],
+    user= os.environ["dbUser"],
+    password= os.environ["dbPasswd"],
+    database= os.environ["dbName"]
 )
 
 def sqlfetch(query, cursor=-1):

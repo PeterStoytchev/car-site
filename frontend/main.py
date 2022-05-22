@@ -4,13 +4,15 @@ from flask import Flask, render_template, send_file, send_from_directory
 
 app = Flask(__name__)
 
+API_ENDPOINT = f"""http://{os.environ["ENDPOINT"]}:{ENDPOINT_PORT}"""
+
 @app.route("/static/<path:path>", methods=["GET"])
 def serve_static(path):
     return send_from_directory("static", path)
 
 @app.route("/", methods=["GET"])
 def root():
-    content = json.loads(requests.get('http://127.0.0.1:5001/brands').content)
+    content = json.loads(requests.get(f'{API_ENDPOINT}/brands').content)
     names = content["names"]
     ids = content["ids"]
 
@@ -22,7 +24,7 @@ def findNameFromId(id, ids, names):
             return names[x]
 
 def getBrandName(id):
-    brandContent = json.loads(requests.get(f"http://127.0.0.1:5001/brands").content)
+    brandContent = json.loads(requests.get(f'{API_ENDPOINT}/brands").content)
     brandIds = brandContent["ids"]
     brandNames = brandContent["names"]
     return findNameFromId(id, brandIds, brandNames)
@@ -30,11 +32,11 @@ def getBrandName(id):
 
 @app.route("/brand/<id>", methods=["GET"])
 def brand(id):
-    model_data = json.loads(requests.get(f"http://127.0.0.1:5001/models/{id}").content)
+    model_data = json.loads(requests.get(f'{API_ENDPOINT}/models/{id}").content)
     
     model_ids = model_data["ids"]
     model_names = model_data["names"]
-    content = json.loads(requests.get(f"http://127.0.0.1:5001/carlist/{id}").content)
+    content = json.loads(requests.get(f'{API_ENDPOINT}/{id}").content)
     
     brandName = getBrandName(id)
 
@@ -45,10 +47,10 @@ def brand(id):
 
 @app.route("/car/<id>", methods=["GET"])
 def car(id):
-    brandid = json.loads(requests.get(f"http://127.0.0.1:5001//brandfromad/{id}").content)["brandid"]
+    brandid = json.loads(requests.get(f'{API_ENDPOINT}/brandfromad/{id}").content)["brandid"]
     brandName = getBrandName(brandid)
 
-    car = json.loads(requests.get(f"http://127.0.0.1:5001/car/{id}").content)
+    car = json.loads(requests.get(f'{API_ENDPOINT}/car/{id}").content)
 
     return render_template("car.html", car=car, brand=brandName)
 
