@@ -5,6 +5,8 @@ from flask import Flask, render_template, send_file, send_from_directory
 
 app = Flask(__name__)
 
+#ENDP = "127.0.0.1:8080"
+
 ENDP = os.environ["ENDPOINT"]
 API_ENDPOINT = f"http://{ENDP}"
 
