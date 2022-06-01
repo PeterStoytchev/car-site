@@ -6,11 +6,7 @@ import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
-
 app = Flask(__name__)
-
-# TODO: Fix the direct uses of a user provided variable, in SQL statements
-
 
 # The zero here, is just a placeholder value, until someone calls a route and touches a route,
 # and creates a connection to the db
@@ -42,6 +38,13 @@ def sqlfetch(query, cursor=-1):
     cursor.execute(query)
     return cursor.fetchall()
 
+def sqlfetchparam(query, vals, cursor=-1):
+    if cursor == -1:
+        cursor = getcursor()
+
+    cursor.execute(query, vals)
+    return cursor.fetchall()
+
 @app.route("/brands", methods=["GET"])
 def getbrands():
     data = sqlfetch(f"""SELECT * FROM brands""")
@@ -60,7 +63,7 @@ def getbrands():
 
 @app.route("/models/<brand_id>", methods=["GET"])
 def getmodelsfrombrand(brand_id):
-    data = sqlfetch(f"""SELECT modelid,modelname FROM models WHERE brand = {brand_id}""")
+    data = sqlfetchparam("""SELECT modelid,modelname FROM models WHERE brand = %s""", [brand_id])
     ids = []
     names = []
 
@@ -75,9 +78,10 @@ def getmodelsfrombrand(brand_id):
         }
     )
 
+# TODO: THIS ONE IS REALLY SLOW
 @app.route("/carlist/<brand_id>", methods=["GET"])
 def getcarlist(brand_id):
-    models = sqlfetch(f"""SELECT modelid FROM models WHERE brand = {brand_id}""")
+    models = sqlfetchparam(f"""SELECT modelid FROM models WHERE brand = %s""", [brand_id])
 
     cars = []
 
@@ -85,9 +89,9 @@ def getcarlist(brand_id):
     
     cursor = getcursor()
     for x in models:
-        data = sqlfetch(f"""SELECT adid,model,year,km FROM cars WHERE model = {x[0]}""", cursor)
+        data = sqlfetchparam("""SELECT adid,model,year,km FROM cars WHERE model = %s""", [x[0]], cursor)
         for y in data:
-            img = sqlfetch(f"""SELECT imgsrc FROM imglist WHERE adid = {y[0]} ORDER BY imgid ASC""", cursor)[0][0]
+            img = sqlfetchparam("""SELECT imgsrc FROM imglist WHERE adid = %s ORDER BY imgid ASC""", [y[0]], cursor)[0][0]
             cars.append(
                 {
                     "id": y[0],
@@ -103,28 +107,30 @@ def getcarlist(brand_id):
 
 @app.route("/brandfromad/<id>")
 def getcarfrombrand(id):
-    
     cursor = getcursor()
-
-    modelid = sqlfetch(f"""SELECT model FROM cars WHERE adid = {id}""", cursor)[0][0]
-    brandid = sqlfetch(f"""SELECT brand FROM models WHERE modelid = {modelid}""", cursor)[0][0]
+    modelid = sqlfetchparam("""SELECT model FROM cars WHERE adid = %s""", [id], cursor)[0][0]
+    brandid = sqlfetchparam("""SELECT brand FROM models WHERE modelid = %s""", [modelid], cursor)[0][0]
 
     return jsonify({"brandid": brandid})
 
 @app.route("/car/<id>", methods=["GET"])
 def getcar(id):
+    if not id.isdigit():
+        return "Invalid adid provided!", 400 
+    else:
+        id = int(id)
     
     cursor = getcursor()
     
-    data = sqlfetch(f"""SELECT * FROM `cars` WHERE `adid` = {id}""", cursor)[0]
+    data = sqlfetchparam("""SELECT * FROM cars WHERE adid = %s""", [id], cursor)[0]
 
-    modeldata = sqlfetch(f"SELECT brand,modelname FROM models WHERE modelid = {data[1]}", cursor)[0]
+    modeldata = sqlfetchparam("SELECT brand,modelname FROM models WHERE modelid = %s", [data[1]], cursor)[0]
     model = modeldata[1]
 
-    brand = sqlfetch(f"SELECT name FROM brands WHERE carid = {modeldata[0]}", cursor)[0][0]
+    brand = sqlfetchparam("SELECT name FROM brands WHERE carid = %s", [modeldata[0]], cursor)[0][0]
 
     imgs = [] 
-    for x in sqlfetch(f"SELECT imgsrc FROM imglist WHERE adid = {data[0]}", cursor):
+    for x in sqlfetchparam("SELECT imgsrc FROM imglist WHERE adid = %s", [data[0]], cursor):
         imgs.append(x[0])
 
     return jsonify(
@@ -153,7 +159,7 @@ def insertcar():
         app.logger.info(f"Exception when trying to add a new car to the site:\n{e}")
         return "500"
 
-    index = sqlfetch(f"SELECT adid FROM cars ORDER BY adid DESC LIMIT 1", cursor)[0][0]
+    index = sqlfetch("SELECT adid FROM cars ORDER BY adid DESC LIMIT 1", cursor)[0][0]
 
     insert_sql_img = """INSERT INTO imglist(adid,imgsrc) VALUES (%s,%s)"""
     for x in req["imgsrc"]:
