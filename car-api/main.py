@@ -1,6 +1,11 @@
 import os
 import mysql.connector
-from flask import Flask, jsonify, request, g
+from flask import Flask, jsonify, request
+
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+
 
 app = Flask(__name__)
 
@@ -134,7 +139,6 @@ def getcar(id):
 
 @app.route("/car", methods=["POST"])
 def insertcar():
-    
     cursor = getcursor()
 
     req = request.json
@@ -146,7 +150,7 @@ def insertcar():
         cursor.execute(insert_sql, vals)
         db.commit()
     except Exception as e:
-        print(f"Exception when trying to add a new car to the site:\n{e}")
+        app.logger.info(f"Exception when trying to add a new car to the site:\n{e}")
         return "500"
 
     index = sqlfetch(f"SELECT adid FROM cars ORDER BY adid DESC LIMIT 1", cursor)[0][0]
@@ -159,6 +163,24 @@ def insertcar():
     db.commit()
 
     return jsonify({"adid": index})
+
+@app.route("/edit/<id>", methods=["POST"])
+def editcar(id):
+    cursor = getcursor()
+    req = request.json
+
+    update_sql = """UPDATE cars SET model=%s, year=%s, km=%s, cardescr=%s WHERE adid=%s"""
+    vals = (req["model"], req["year"], req["km"], req["cardescr"], id)
+
+    try:
+        cursor.execute(update_sql, vals)
+        db.commit()
+    except Exception as e:
+        app.logger.info(f"Exception when trying to add a new car to the site:\n{e}")
+        return "Exception when trying to add a new car to the site!", 500
+
+    db.commit()
+    return "", 200
 
 @app.route("/img", methods=["POST"])
 def uploadimg():
@@ -173,7 +195,7 @@ def uploadimg():
         cursor.execute(insert_sql, vals)
         db.commit()
     except Exception as e:
-        print(f"Exception when trying to add a new img to the site:\n{e}")
+        app.logger.info(f"Exception when trying to add a new img to the site:\n{e}")
         return "500"
 
     return "200"
