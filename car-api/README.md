@@ -64,11 +64,11 @@ POST "/edit/`<id>`"<br>
 Call this when you want to edit a car ad. IMPORTANT! Make sure that when you call this, you make a POST request. By default, requests will make a GET request.
 In order for it to work, you need to submit the request, with a valid JSON body. An example body, would look like this:
 
-{
-    "year": `<updated year>`,
-    "km": `<updated km that the car has done>`,
-    "cardescr": `<new car description>`
-}
+{<br>
+    "year": `<updated year>`,<br>
+    "km": `<updated km that the car has done>`,<br>
+    "cardescr": `<new car description>`<br>
+}<br>
 
 Volatility: The JSON body's format, will change, but the route itself probably won't.
 
