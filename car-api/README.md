@@ -47,7 +47,7 @@ POST "/car"<br>
 Call this when you want to add a car ad to the system. IMPORTANT! Make sure that when you call this, you make a POST request. By default, requests will make a GET request.
 In order for it to work, you need to submit the request, with a valid JSON body. An example body, would look like this:
 
-{
+{<br>
     "model": `<model id>`,<br>
     "year": `<year>`,<br>
     "km": `<km that the car has done>`,<br>
