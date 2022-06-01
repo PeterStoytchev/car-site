@@ -63,6 +63,11 @@ def getbrands():
 
 @app.route("/models/<brand_id>", methods=["GET"])
 def getmodelsfrombrand(brand_id):
+    if not brand_id.isdigit():
+        return "Invalid adid provided!", 400 
+    else:
+        brand_id = int(brand_id)
+
     data = sqlfetchparam("""SELECT modelid,modelname FROM models WHERE brand = %s""", [brand_id])
     ids = []
     names = []
@@ -81,6 +86,11 @@ def getmodelsfrombrand(brand_id):
 # TODO: THIS ONE IS REALLY SLOW
 @app.route("/carlist/<brand_id>", methods=["GET"])
 def getcarlist(brand_id):
+    if not brand_id.isdigit():
+        return "Invalid adid provided!", 400 
+    else:
+        brand_id = int(brand_id)
+
     models = sqlfetchparam(f"""SELECT modelid FROM models WHERE brand = %s""", [brand_id])
 
     cars = []
@@ -107,6 +117,11 @@ def getcarlist(brand_id):
 
 @app.route("/brandfromad/<id>")
 def getcarfrombrand(id):
+    if not id.isdigit():
+        return "Invalid adid provided!", 400 
+    else:
+        id = int(id)
+
     cursor = getcursor()
     modelid = sqlfetchparam("""SELECT model FROM cars WHERE adid = %s""", [id], cursor)[0][0]
     brandid = sqlfetchparam("""SELECT brand FROM models WHERE modelid = %s""", [modelid], cursor)[0][0]
@@ -172,6 +187,11 @@ def insertcar():
 
 @app.route("/edit/<id>", methods=["POST"])
 def editcar(id):
+    if not id.isdigit():
+        return "Invalid adid provided!", 400 
+    else:
+        id = int(id)
+
     cursor = getcursor()
     req = request.json
 
