@@ -1,32 +1,41 @@
 import os
 import mysql.connector
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, g
 
 app = Flask(__name__)
 
-"""
-db = mysql.connector.connect(
-    host = "192.168.1.10",
-    user = "yoship",
-    password = "ffx1v1sagoodgame",
-    database = "carsite"
-)
-"""
+# TODO: Fix the direct uses of a user provided variable, in SQL statements
 
-db = mysql.connector.connect(
-    host= os.environ["dbHost"],
-    user= os.environ["dbUser"],
-    password= os.environ["dbPasswd"],
-    database= os.environ["dbName"]
-)
+
+# The zero here, is just a placeholder value, until someone calls a route and touches a route,
+# and creates a connection to the db
+db = 0
+
+def getcursor():
+    global db
+    
+    try:
+        c = db.cursor()
+        return c
+    except Exception as e:
+        db = mysql.connector.connect(
+            host= os.environ["dbHost"],
+            user= os.environ["dbUser"],
+            password= os.environ["dbPasswd"],
+            database= os.environ["dbName"],
+            connect_timeout=28800
+        )
+
+        c = db.cursor()
+        return c
+
 
 def sqlfetch(query, cursor=-1):
     if cursor == -1:
-        cursor = db.cursor()
+        cursor = getcursor()
 
     cursor.execute(query)
     return cursor.fetchall()
-
 
 @app.route("/brands", methods=["GET"])
 def getbrands():
@@ -43,7 +52,6 @@ def getbrands():
         "ids": ids,
         "names": names
     })
-
 
 @app.route("/models/<brand_id>", methods=["GET"])
 def getmodelsfrombrand(brand_id):
@@ -69,7 +77,8 @@ def getcarlist(brand_id):
     cars = []
 
     #TODO: Batch execution of querries!
-    cursor = db.cursor()
+    
+    cursor = getcursor()
     for x in models:
         data = sqlfetch(f"""SELECT adid,model,year,km FROM cars WHERE model = {x[0]}""", cursor)
         for y in data:
@@ -89,7 +98,9 @@ def getcarlist(brand_id):
 
 @app.route("/brandfromad/<id>")
 def getcarfrombrand(id):
-    cursor = db.cursor()
+    
+    cursor = getcursor()
+
     modelid = sqlfetch(f"""SELECT model FROM cars WHERE adid = {id}""", cursor)[0][0]
     brandid = sqlfetch(f"""SELECT brand FROM models WHERE modelid = {modelid}""", cursor)[0][0]
 
@@ -97,7 +108,8 @@ def getcarfrombrand(id):
 
 @app.route("/car/<id>", methods=["GET"])
 def getcar(id):
-    cursor = db.cursor()
+    
+    cursor = getcursor()
     
     data = sqlfetch(f"""SELECT * FROM `cars` WHERE `adid` = {id}""", cursor)[0]
 
@@ -122,7 +134,9 @@ def getcar(id):
 
 @app.route("/car", methods=["POST"])
 def insertcar():
-    cursor = db.cursor()
+    
+    cursor = getcursor()
+
     req = request.json
 
     insert_sql = """INSERT INTO `cars`(`model`, `year`, `km`, `cardescr`) VALUES (%s,%s,%s,%s)"""
@@ -149,7 +163,8 @@ def insertcar():
 @app.route("/img", methods=["POST"])
 def uploadimg():
     req = request.json
-    cursor = db.cursor()
+    
+    cursor = getcursor()
 
     insert_sql = """INSERT INTO imglist(adid,imgsrc) VALUES (%s,%s)"""
     vals = (req["adid"], req["imgsrc"])
