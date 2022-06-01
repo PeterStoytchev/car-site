@@ -208,23 +208,5 @@ def editcar(id):
     db.commit()
     return "", 200
 
-@app.route("/img", methods=["POST"])
-def uploadimg():
-    req = request.json
-    
-    cursor = getcursor()
-
-    insert_sql = """INSERT INTO imglist(adid,imgsrc) VALUES (%s,%s)"""
-    vals = (req["adid"], req["imgsrc"])
-
-    try:
-        cursor.execute(insert_sql, vals)
-        db.commit()
-    except Exception as e:
-        app.logger.info(f"Exception when trying to add a new img to the site:\n{e}")
-        return "500"
-
-    return "200"
-
 if __name__ == "__main__":
     app.run(debug=False, host="0.0.0.0", port=5001)
