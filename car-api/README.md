@@ -48,12 +48,12 @@ Call this when you want to add a car ad to the system. IMPORTANT! Make sure that
 In order for it to work, you need to submit the request, with a valid JSON body. An example body, would look like this:
 
 {
-    "model": `<model id>`,
-    "year": `<year>`,
-    "km": `<km that the car has done>`,
-    "cardescr": `<car description>`,
-    "imgsrc": [`<link to img1>`, `<link to img2>`, `<... and so on>`]
-}
+    "model": `<model id>`,<br>
+    "year": `<year>`,<br>
+    "km": `<km that the car has done>`,<br>
+    "cardescr": `<car description>`,<br>
+    "imgsrc": [`<link to img1>`, `<link to img2>`, `<... and so on>`]<br>
+}<br>
 
 Volatility: The JSON body's format, will most likely change, but the route itself probably won't.
 
