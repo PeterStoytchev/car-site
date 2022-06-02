@@ -96,7 +96,6 @@ def getcarlist(brand_id):
     cars = []
 
     #TODO: Batch execution of querries!
-    
     cursor = getcursor()
     for x in models:
         data = sqlfetchparam("""SELECT adid,model,year,km FROM cars WHERE model = %s""", [x[0]], cursor)
