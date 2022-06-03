@@ -163,7 +163,7 @@ def insertcar():
 
     req = request.json
 
-    insert_sql = """INSERT INTO `cars`(`model`, `year`, `km`, `cardescr`) VALUES (%s,%s,%s,%s)"""
+    insert_sql = """INSERT INTO cars(model, year, km, cardescr) VALUES (%s,%s,%s,%s)"""
     vals = (req["model"], req["year"], req["km"], req["cardescr"])
 
     try:
