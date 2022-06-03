@@ -12,11 +12,34 @@
     {% block content %}
     <div style="width: 50%; margin: auto">
         {% for id in ids %}
-        <div style="padding: 10px; background-color: #EEE; margin: 20px">
-            <a href= {{ url_for("brand", id=id)}}>{{ brands[loop.index0] }}</a>
-        </div>
+        <div class="dropdown">
+            <button onclick="myFunction()" class="dropbtn">Car brand</button>
+            <div id="myDropdown" class="dropdown-content">
+              <a href={{ url_for("brand", id=id)}}>{{ brands[loop.index0] }}</a>
+            </div>
+          </div>
         {% endfor %}
     </div>
     {% endblock %}
+<script>
+    function myFunction() {
+  document.getElementById("myDropdown").classList.toggle("show");
+}
+
+// Close the dropdown menu if the user clicks outside of it
+window.onclick = function(event) {
+  if (!event.target.matches('.dropbtn')) {
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+    var i;
+    for (i = 0; i < dropdowns.length; i++) {
+      var openDropdown = dropdowns[i];
+      if (openDropdown.classList.contains('show')) {
+        openDropdown.classList.remove('show');
+      }
+    }
+  }
+}
+</script>
 </body>
 </html>
+
