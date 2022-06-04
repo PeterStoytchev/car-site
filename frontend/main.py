@@ -40,9 +40,9 @@ def root():
                     add=False
             if add:
                 found.append(car)
+        return render_template("index.html", brands = names, ids= ids, cars=found)
 
-
-    return render_template("index.html", brands=names, ids=ids, cars=found)
+    return render_template("index.html", brands=names, ids=ids)
 
 def findNameFromId(id, ids, names):
     for x in range(len(ids)):
