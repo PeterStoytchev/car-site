@@ -16,10 +16,7 @@ body
     background-color: #2980B9;
   }
   
-  .dropdown {
-    position: relative;
-    display: inline-block;
-  }
+ 
   
   .dropdown-content {
     display: none;
@@ -40,4 +37,4 @@ body
 
   .dropdown-content a:hover {background-color: #ddd}
 
-  .show {display:block;}
+  .dropdown:hover .dropdown-content {display: block;}

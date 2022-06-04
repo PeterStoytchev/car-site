@@ -11,35 +11,36 @@
     <h1>Choose a brand:</h1>
     {% block content %}
     <div style="width: 50%; margin: auto">
-        {% for id in ids %}
-        <div class="dropdown">
-            <button onclick="myFunction()" class="dropbtn">Car brand</button>
-            <div id="myDropdown" class="dropdown-content">
-              <a href={{ url_for("brand", id=id)}}>{{ brands[loop.index0] }}</a>
-            </div>
-          </div>
+      <form method="GET">
+        <select name="brand" id="brand">
+          {% for id in ids %}
+            <option value="{{id}}">{{ brands[loop.index0] }}</option>
+          {% endfor %}  
+        </select>
+
+        <select name="year" id="year">
+          {% for year in range(2000, 2023) %}
+            <option value="{{year}}">{{year}}</option>"
+          {% endfor %}
+        </select>
+
+        <select name="km" id="km">
+          {% for km in range(50000, 550000, 50000) %}
+            <option value="{{km}}">{{km}}</option>
+          {% endfor %}
+        </select>
+        <input type="submit" value="Submit">
+      </form>
+
+      {% if cars %}
+        {% for car in cars %}
+          <p>Model: {{car.model}} Year: {{car.year}} Milage: {{car.km}}</p>
+          <img src="{{car.img}}">
+          <br>
         {% endfor %}
+      {% endif %}
     </div>
     {% endblock %}
-<script>
-    function myFunction() {
-  document.getElementById("myDropdown").classList.toggle("show");
-}
-
-// Close the dropdown menu if the user clicks outside of it
-window.onclick = function(event) {
-  if (!event.target.matches('.dropbtn')) {
-    var dropdowns = document.getElementsByClassName("dropdown-content");
-    var i;
-    for (i = 0; i < dropdowns.length; i++) {
-      var openDropdown = dropdowns[i];
-      if (openDropdown.classList.contains('show')) {
-        openDropdown.classList.remove('show');
-      }
-    }
-  }
-}
-</script>
 </body>
 </html>
 
