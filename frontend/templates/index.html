@@ -1,46 +1,77 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <meta charset='utf-8'>
-    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-    <title>Page Title</title>
-    <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <link rel='stylesheet' type='text/css' media='screen' href='static/main.css'>
+  <meta charset='utf-8'>
+  <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+  <title>Car website</title>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <link rel='stylesheet' type='text/css' media='screen' href='static/main.css'>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
+
 <body>
-    <h1>Choose a brand:</h1>
-    {% block content %}
-    <div style="width: 50%; margin: auto">
-      <form method="GET">
-        <select name="brand" id="brand">
-          {% for id in ids %}
-            <option value="{{id}}">{{ brands[loop.index0] }}</option>
-          {% endfor %}  
-        </select>
-
-        <select name="year" id="year">
-          {% for year in range(2000, 2023) %}
-            <option value="{{year}}">{{year}}</option>"
-          {% endfor %}
-        </select>
-
-        <select name="km" id="km">
-          {% for km in range(50000, 550000, 50000) %}
-            <option value="{{km}}">{{km}}</option>
-          {% endfor %}
-        </select>
-        <input type="submit" value="Submit">
-      </form>
-
-      {% if cars %}
-        {% for car in cars %}
-          <p>Model: {{car.model}} Year: {{car.year}} Milage: {{car.km}}</p>
-          <img src="{{car.img}}">
-          <br>
-        {% endfor %}
-      {% endif %}
+  <h1>Choose a brand:</h1>
+  {% block content %}
+  <div style="width: 50%; margin: auto">
+    {% if request.args.get("posted") == "true" %}
+    <div class="flashes">
+      Ad posted!
     </div>
+    {% endif %}
+
+    <form method="GET">
+      <select name="brand" id="brand">
+        {% for id in ids %}
+        <option value="{{id}}">{{ brands[loop.index0] }}</option>
+        {% endfor %}
+      </select>
+
+      <select name="year" id="year">
+        {% for year in range(2000, 2023) %}
+        <option value="{{year}}">{{year}}</option>"
+        {% endfor %}
+      </select>
+
+      <select name="km" id="km">
+        {% for km in range(50000, 550000, 50000) %}
+        <option value="{{km}}">{{km}}</option>
+        {% endfor %}
+      </select>
+      <input type="submit" value="Submit">
+    </form>
+
+    <a href="/new"><button>Post a new ad</button></a>
+    {% if cars %}
+      {% for car in cars %}
+        <p>
+          <button data-carId="{{car.id}}" id="delete">Delete</button>
+          Model: {{car.model}} Year: {{car.year}} Mileage: {{car.km}}
+        </p>
+    <p>Model: {{car.model}} Year: {{car.year}} Milage: {{car.km}}</p>
+    <img src="{{car.img}}">
+    <br>
+      {% endfor %}
+
+      {% endif %}
+
+  <script>
+    $(document).ready(function() {
+      $("#delete").click(function(){
+      if (confirm("Are you sure you want to delete this ad?"))
+        
+          $.ajax({
+            url: window.location.href,
+            type: "DELETE",
+            data: {
+              "cardId": parseInt($(this).data("cardId"))
+            }
+          })
+      })
+    })
+  </script>
+  </div>
     {% endblock %}
 </body>
-</html>
 
+</html>
