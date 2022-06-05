@@ -26,6 +26,19 @@ services:
       be:
         aliases:
           - frend
+          
+  mysql_slave:
+    image: mysql:5.7
+    env_file:
+      - ./mysql_pod/mysql_pod.env
+    container_name: "mysql_pod"
+    restart: "no"
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql_pod/conf/mysql.conf.cnf:/etc/mysql/conf.d/mysql.conf.cnf
+    networks:
+      be:
 
   reverse_proxy:
     build: car-x/.
