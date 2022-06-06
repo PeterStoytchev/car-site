@@ -143,6 +143,7 @@ def adadd():
             "email": email,
             "imgsrc": files
         }
+        data = json.dumps(data)
         resp = requests.post(f"{API_ENDPOINT}/car", data=data)
 
         if "adid" not in str(resp.content):
