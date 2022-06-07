@@ -3,14 +3,14 @@ echo "Starting setup script in configuration $1"
 sudo apt-get update -y
 sudo apt-get full-upgrade -y
 
-if ["$1" == "master"]; then
+if [ "$1" == "master" ]; then
     sudo apt-get install -y docker.io docker-compose
 else
     sudo apt-get install -y openvpn docker.io docker-compose
 fi
 echo "Finished installing updates and dependencies!"
 
-if ["$1" == "master"]; then
+if [ "$1" == "master" ]; then
     sudo docker-compose -f docker-compose-master.yml build
     sudo docker-compose -f docker-compose-master.yml up -d
     

@@ -1,4 +1,4 @@
-if ["$1" == "master"]; then
+if [ "$1" == "master" ]; then
     echo "Starting master..."
     sudo docker-compose -f docker-compose-master.yml start -d
     echo "Master composition started!"
