@@ -1,6 +1,6 @@
 if [ "$1" == "master" ]; then
     echo "Starting master..."
-    sudo docker-compose -f docker-compose-master.yml start -d
+    sudo docker start mysql_master
     echo "Master composition started!"
 else
     echo "Starting pod..."
@@ -11,7 +11,7 @@ else
     sudo openvpn --config vpn.conf --daemon remote
     echo "VPN connected in daemon mode!"
 
-    sudo docker-compose -f docker-compose-pod.yml start -d
+    sudo docker-compose start -d
 
     echo "Pod composition started!"
 fi
