@@ -11,7 +11,7 @@ else
     sudo openvpn --config vpn.conf --daemon remote
     echo "VPN connected in daemon mode!"
 
-    sudo docker-compose -f docker-compose-master.yml start -d
+    sudo docker-compose -f docker-compose-pod.yml start -d
 
     echo "Pod composition started!"
 fi
