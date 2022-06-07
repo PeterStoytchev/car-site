@@ -40,8 +40,8 @@ else
     sudo iptables -P FORWARD ACCEPT
     echo "Forwarding and iptables changed!"
 
-    sudo docker-compose -f docker-compose-pod.yml build
-    sudo docker-compose -f docker-compose-pod.yml up -d
+    sudo docker-compose build
+    sudo docker-compose up -d
 
     echo "Pod composition is built and up! Waiting for 15 seconds, so that the DB can boot!"
     sleep 15
