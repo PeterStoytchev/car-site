@@ -1,20 +1,19 @@
 version: '2'
 
 networks:
-  be:
-    external:
-      name: car-net
+  carnet:
+    driver: bridge
 
 services:
   carapi:
     build: car-api/.
     environment:
       - dbHost=db
-      - dbUser=api
-      - dbPasswd=ApiPass123.
+      - dbUser=root
+      - dbPasswd=111
       - dbName=car-db
     networks:
-      be:
+      carnet:
         aliases:
           - car-api
 
@@ -23,7 +22,7 @@ services:
     environment:
       - ENDPOINT=car-api:5001
     networks:
-      be:
+      carnet:
         aliases:
           - frend
           
@@ -33,12 +32,12 @@ services:
       - ./mysql_pod/mysql_pod.env
     container_name: "mysql_pod"
     restart: "no"
-    ports:
-      - "3306:3306"
     volumes:
       - ./mysql_pod/conf/mysql.conf.cnf:/etc/mysql/conf.d/mysql.conf.cnf
     networks:
-      be:
+      carnet:
+        aliases:
+          - db
 
   reverse_proxy:
     build: car-x/.
@@ -48,6 +47,6 @@ services:
       - carapi
       - frontend
     networks:
-      be:
+      carnet:
         aliases:
           - revprox

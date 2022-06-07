@@ -11,8 +11,7 @@ fi
 echo "Finished installing updates and dependencies!"
 
 if [ "$1" == "master" ]; then
-    sudo docker-compose -f docker-compose-master.yml build
-    sudo docker-compose -f docker-compose-master.yml up -d
+    sudo docker run -d --mount source=mysql_master/conf/mysql.conf.cnf,target=/etc/mysql/conf.d/mysql.conf.cnf --env-file mysql_master/mysql_master.env --name mysql_master -p 3306:3306 mysql:5.7
     
     echo "Master composition is built and up! Waiting for 15 seconds, so that the DB can boot!"
     sleep 15
