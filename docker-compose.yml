@@ -32,6 +32,8 @@ services:
       - ./mysql_pod/mysql_pod.env
     container_name: "mysql_pod"
     restart: "no"
+    ports:
+       
     volumes:
       - ./mysql_pod/conf/mysql.conf.cnf:/etc/mysql/conf.d/mysql.conf.cnf
     networks:
