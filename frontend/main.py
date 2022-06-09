@@ -1,14 +1,13 @@
-import os
-import requests
-import json
+import os, requests, json
 from flask import Flask, render_template, send_file, send_from_directory
 
 app = Flask(__name__)
 
-#ENDP = "127.0.0.1:8080"
-
 ENDP = os.environ["ENDPOINT"]
+ENDP_STATIC = os.environ["ENDPOINT_STATIC"]
+
 API_ENDPOINT = f"http://{ENDP}"
+API_ENDPOINT_STATIC = f"http://{ENDP_STATIC}"
 
 @app.route("/static/<path:path>", methods=["GET"])
 def serve_static(path):
@@ -47,8 +46,16 @@ def brand(id):
 
     for x in content:
         x["model"] = findNameFromId(x["model"], model_ids, model_names)
+        x["img"] = getRealLinks([x["img"]])[0]
 
     return render_template("brand.html", cars=content, brand=brandName)
+
+def getRealLinks(img_ids):
+    links = []
+    for x in img_ids:
+        links.append(str(requests.get(f"{API_ENDPOINT_STATIC}/{x}").content).split('\'')[1])
+
+    return links
 
 @app.route("/car/<id>", methods=["GET"])
 def car(id):
@@ -56,6 +63,7 @@ def car(id):
     brandName = getBrandName(brandid)
 
     car = json.loads(requests.get(f"{API_ENDPOINT}/car/{id}").content)
+    car["imgs"] = getRealLinks(car["imgs"])
 
     return render_template("car.html", car=car, brand=brandName)
 

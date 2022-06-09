@@ -5,27 +5,6 @@ networks:
     driver: bridge
 
 services:
-  carapi:
-    build: car-api/.
-    environment:
-      - dbHost=db
-      - dbUser=root
-      - dbPasswd=111
-      - dbName=car-db
-    networks:
-      carnet:
-        aliases:
-          - car-api
-
-  frontend:
-    build: frontend/.
-    environment:
-      - ENDPOINT=car-api:5001
-    networks:
-      carnet:
-        aliases:
-          - frend
-          
   mysql_slave:
     image: mysql:5.7
     env_file:
@@ -33,13 +12,53 @@ services:
     container_name: "mysql_pod"
     restart: "no"
     ports:
-       
+
     volumes:
       - ./mysql_pod/conf/mysql.conf.cnf:/etc/mysql/conf.d/mysql.conf.cnf
     networks:
       carnet:
         aliases:
           - db
+
+  carapi:
+    build: car-api/.
+    environment:
+      - dbHost=db
+      - dbUser=root
+      - dbPasswd=111
+      - dbName=car-db
+    depends_on:
+      - mysql_slave
+    networks:
+      carnet:
+        aliases:
+          - car-api
+
+  imgserv:
+    build: img-provider/.
+    environment:
+      - AWS_ACCESS_KEY_ID=AKIAUYFN7TZOCWFXYGEC
+      - AWS_SECRET_ACCESS_KEY=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
+    depends_on:
+      - mysql_slave
+    networks:
+      carnet:
+        aliases:
+          - img-service
+
+  frontend:
+    build: frontend/.
+    environment:
+      - ENDPOINT=car-api:5001
+    depends_on:
+      - carapi
+      - imgserv
+    networks:
+      carnet:
+        aliases:
+          - frend
+
+
 
   reverse_proxy:
     build: car-x/.
