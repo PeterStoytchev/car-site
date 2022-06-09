@@ -11,7 +11,10 @@
 </head>
 
 <body>
-  <h1>Choose a brand:</h1>
+  <div>
+    <img src="static/company.png" id="img">
+  </div>
+  <h1>What type of car are you looking for?</h1>
   {% block content %}
   <div style="width: 50%; margin: auto">
     {% if request.args.get("posted") == "true" %}
@@ -38,18 +41,18 @@
         <option value="{{km}}">{{km}}</option>
         {% endfor %}
       </select>
-      <input type="submit" value="Submit">
+      <input type="submit" value="Submit" id="subbutt">
     </form>
 
-    <a href="/new"><button>Post a new ad</button></a>
+    <h3 id="postad">Looking to sell your car? Post an ad!</h3>
+    <a href="/new"><button id="post">Post a new ad</button></a>
     {% if cars %}
       {% for car in cars %}
         <p>
-          <button data-carId="{{car.id}}" id="delete">Delete</button>
+          <button data-carId="{{car.id}}" id="delete">Delete ad</button>
           Model: {{car.model}} Year: {{car.year}} Mileage: {{car.km}}
         </p>
-    <p>Model: {{car.model}} Year: {{car.year}} Milage: {{car.km}}</p>
-    <img src="{{car.img}}">
+    <p>Model: {{car.model}} Year: {{car.year}} Milage: {{car.km}}</p><img src="{{car.img}}" id="carbb">
     <br>
       {% endfor %}
 
@@ -74,4 +77,7 @@
     {% endblock %}
 </body>
 
+<footer id="footer">
+  <p>This website was created by Peter Stoychev, Eris Rahimi, Ryan Smith, founders of Group 14 Inc. &copy;</p>
+</footer>
 </html>
