@@ -20,20 +20,6 @@ services:
         aliases:
           - db
 
-  carapi:
-    build: car-api/.
-    environment:
-      - dbHost=db
-      - dbUser=root
-      - dbPasswd=111
-      - dbName=car-db
-    depends_on:
-      - mysql_slave
-    networks:
-      carnet:
-        aliases:
-          - car-api
-
   imgserv:
     build: img-provider/.
     environment:
@@ -46,19 +32,36 @@ services:
         aliases:
           - img-service
 
+  carapi:
+    build: car-api/.
+    environment:
+      - dbHostMaster=192.168.1.118
+      - dbUserMaster=root
+      - dbPasswdMaster=111
+      - dbNameMaster=car-db
+      - dbHostPod=db
+      - dbUserPod=root
+      - dbPasswdPod=111
+      - dbNamePod=car-db
+      - IMG_ENDPOINT=img-service:8081
+    depends_on:
+      - mysql_slave
+      - imgserv
+    networks:
+      carnet:
+        aliases:
+          - car-api
+
   frontend:
     build: frontend/.
     environment:
       - ENDPOINT=car-api:5001
     depends_on:
       - carapi
-      - imgserv
     networks:
       carnet:
         aliases:
           - frend
-
-
 
   reverse_proxy:
     build: car-x/.
