@@ -50,12 +50,6 @@ def brand(id):
 
     return render_template("brand.html", cars=content, brand=brandName)
 
-def getRealLinks(img_ids):
-    links = []
-    for x in img_ids:
-        links.append(str(requests.get(f"{API_ENDPOINT_STATIC}/{x}").content).split('\'')[1])
-
-    return links
 
 @app.route("/car/<id>", methods=["GET"])
 def car(id):
@@ -63,7 +57,6 @@ def car(id):
     brandName = getBrandName(brandid)
 
     car = json.loads(requests.get(f"{API_ENDPOINT}/car/{id}").content)
-    car["imgs"] = getRealLinks(car["imgs"])
 
     return render_template("car.html", car=car, brand=brandName)
 

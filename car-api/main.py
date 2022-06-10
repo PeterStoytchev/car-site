@@ -1,11 +1,14 @@
+import requests
+import os, logging
 import mysql.connector
 from flask import Flask, jsonify, request
+from SearchRequest import SearchRequest
 
-import logging
-
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__)
+
+IMG_ENDPOINT = os.environ["IMG_ENDPOINT"]
 
 # The zero here, is just a placeholder value, until someone calls a route and touches a route,
 # and creates a connection to the db
@@ -93,20 +96,22 @@ def getcarlist(brand_id):
     models = sqlfetchparam(f"""SELECT modelid FROM models WHERE brand = %s""", [brand_id])
 
     cars = []
-
-    #TODO: Batch execution of querries!
     cursor = getcursor()
     for x in models:
-        data = sqlfetchparam("""SELECT adid,model,year,km FROM cars WHERE model = %s""", [x[0]], cursor)
+        data = sqlfetchparam("""SELECT adid,model,year,km,bhp,email,price FROM cars WHERE model = %s""", [x[0]], cursor)
         for y in data:
             img = sqlfetchparam("""SELECT imgsrc FROM imglist WHERE adid = %s ORDER BY imgid ASC""", [y[0]], cursor)[0][0]
+            img = str(requests.get(f"http://{IMG_ENDPOINT}/{img}").content).split("'")[1]
             cars.append(
                 {
                     "id": y[0],
                     "model": y[1],
                     "year": y[2],
                     "km": y[3],
-                    "img": img
+                    "img": img,
+                    "bhp": y[4],
+                    "email": y[5],
+                    "price": y[6]
                 })
 
 
@@ -136,6 +141,7 @@ def getcar(id):
     cursor = getcursor()
     
     data = sqlfetchparam("""SELECT * FROM cars WHERE adid = %s""", [id], cursor)[0]
+    app.logger.info(data)
 
     modeldata = sqlfetchparam("SELECT brand,modelname FROM models WHERE modelid = %s", [data[1]], cursor)[0]
     model = modeldata[1]
@@ -144,7 +150,8 @@ def getcar(id):
 
     imgs = [] 
     for x in sqlfetchparam("SELECT imgsrc FROM imglist WHERE adid = %s", [data[0]], cursor):
-        imgs.append(x[0])
+        actual_link = str(requests.get(f"http://{IMG_ENDPOINT}/{x[0]}").content).split("'")[1]
+        imgs.append(actual_link)
 
     return jsonify(
     {
@@ -152,7 +159,10 @@ def getcar(id):
         "model": model,
         "year": data[2],
         "km": data[3],
-        "cardescr": data[4],
+        "bhp": data[4],
+        "price": data[5],
+        "cardescr": data[6],
+        "email": data[7],
         "imgs": imgs
     })
 
@@ -162,8 +172,8 @@ def insertcar():
 
     req = request.json
 
-    insert_sql = """INSERT INTO cars(model, year, km, cardescr) VALUES (%s,%s,%s,%s)"""
-    vals = (req["model"], req["year"], req["km"], req["cardescr"])
+    insert_sql = """INSERT INTO cars(model, year, km, bhp, email, price, cardescr) VALUES (%s,%s,%s,%s,%s,%s,%s)"""
+    vals = (req["model"], req["year"], req["km"], req["bhp"], req["email"], req["price"], req["cardescr"])
 
     try:
         cursor.execute(insert_sql, vals)
@@ -207,4 +217,4 @@ def editcar(id):
     return "", 200
 
 if __name__ == "__main__":
-    app.run(debug=False, host="0.0.0.0", port=5001)
+    app.run(debug=True, host="0.0.0.0", port=5001)
