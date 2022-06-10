@@ -84,11 +84,12 @@ body
 
 #postad
 {
-	margin-top: 15%;
+	margin-top: 5%;
 }
 
 #delete
 {
+	margin-top: 5%;
 	text-align: center;
 	font-size: 13px;
 	background-color: #000000;
