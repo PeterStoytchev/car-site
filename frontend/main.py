@@ -44,7 +44,6 @@ def brand(id):
 
     for x in content:
         x["model"] = findNameFromId(x["model"], model_ids, model_names)
-        x["img"] = getRealLinks([x["img"]])[0]
 
     return render_template("brand.html", cars=content, brand=brandName)
 

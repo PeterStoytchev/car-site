@@ -2,10 +2,6 @@ import os
 import mysql.connector
 
 class DatabaseAssistant:
-    def __init__(self):
-        self.__initRead()
-        self.__initWrite()
-
     def __initRead(self):
         self.db_read = mysql.connector.connect(
             host= os.environ["dbHostPod"],

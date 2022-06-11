@@ -1,7 +1,6 @@
 import os, logging, requests
 from DatabaseAssistant import DatabaseAssistant
 from flask import Flask, jsonify, request
-from SearchRequest import SearchRequest
 
 logging.basicConfig(level=logging.INFO)
 
