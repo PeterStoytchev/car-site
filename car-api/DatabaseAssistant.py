@@ -7,20 +7,18 @@ class DatabaseAssistant:
             host= os.environ["dbHostPod"],
             user= os.environ["dbUserPod"],
             password= os.environ["dbPasswdPod"],
-            database= os.environ["dbNamePod"],
-            connect_timeout=28800
+            database= os.environ["dbNamePod"]
         )
-        self.readCursor = self.db_read.cursor()
+        self.readCursor = self.db_read.cursor(buffered=True)
 
     def __initWrite(self):
         self.db_write = mysql.connector.connect(
             host= os.environ["dbHostMaster"],
             user= os.environ["dbUserMaster"],
             password= os.environ["dbPasswdMaster"],
-            database= os.environ["dbNameMaster"],
-            connect_timeout=28800
+            database= os.environ["dbNameMaster"]
         )
-        self.writeCursor = self.db_write.cursor()
+        self.writeCursor = self.db_write.cursor(buffered=True)
 
 
     def ReadQuery(self, query, vals=[]):
@@ -33,13 +31,16 @@ class DatabaseAssistant:
         return self.readCursor.fetchall()
 
     def ReadQueryMaster(self, query, vals=[]):
-        return self.WriteQuery(query, vals)
+        return self.WriteQuery(query, vals, True)
 
-    def WriteQuery(self, query, vals=[]):
+    def WriteQuery(self, query, vals=[], read=False):
         try:
             self.writeCursor.execute(query, vals)
-            self.db_write.commit()
         except Exception as e:
             self.__initWrite()
             self.writeCursor.execute(query, vals)
+           
+        if not read:
             self.db_write.commit()
+        else:
+            return self.writeCursor.fetchall()
