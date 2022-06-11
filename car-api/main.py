@@ -131,7 +131,7 @@ def getcar(id):
 def insertcar():
     req = request.json
 
-    insert_sql = """INSERT INTO cars(model, year, km, bhp, email, price, cardescr) VALUES (%s,%s,%s,%s,%s,%s,%s)"""
+    insert_sql = "INSERT INTO cars(model, year, km, bhp, email, price, cardescr) VALUES (%s,%s,%s,%s,%s,%s,%s)"
     vals = (req["model"], req["year"], req["km"], req["bhp"], req["email"], req["price"], req["cardescr"])
 
     try:
@@ -158,7 +158,7 @@ def editcar(id):
 
     req = request.json
 
-    update_sql = """UPDATE cars SET model=%s, year=%s, km=%s, cardescr=%s, price=%s, email=%s, bhp=%s WHERE adid=%s"""
+    update_sql = "UPDATE cars SET model=%s, year=%s, km=%s, cardescr=%s, price=%s, email=%s, bhp=%s WHERE adid=%s"
     vals = (req["model"], req["year"], req["km"], req["cardescr"], req["price"], req["email"], req["bhp"], id)
 
     try:
@@ -167,7 +167,17 @@ def editcar(id):
         app.logger.info(f"Exception when trying to add a new car to the site:\n{e}")
         return "Exception when trying to add a new car to the site!", 500
 
-    db.commit()
+    return "", 200
+
+@app.route("/deluser", methods=["DELETE"])
+def deluser():
+    req = request.json
+    
+    for x in db.ReadQuery("SELECT adid FROM cars WHERE email = %s", [req["email"]]):
+       db.WriteQuery("DELETE FROM imglist WHERE imgid = %s", [x[0]])
+    
+    db.WriteQuery("DELETE FROM cars WHERE email = %s", [req["email"]])
+
     return "", 200
 
 if __name__ == "__main__":
