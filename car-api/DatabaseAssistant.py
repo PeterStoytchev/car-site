@@ -22,11 +22,8 @@ class DatabaseAssistant:
 
 
     def ReadQuery(self, query, vals=[]):
-        try:
-            self.readCursor.execute(query, vals)
-        except Exception as e:
-            self.__initRead()
-            self.readCursor.execute(query, vals)
+        self.__initRead()
+        self.readCursor.execute(query, vals)
             
         return self.readCursor.fetchall()
 
@@ -34,11 +31,8 @@ class DatabaseAssistant:
         return self.WriteQuery(query, vals, True)
 
     def WriteQuery(self, query, vals=[], read=False):
-        try:
-            self.writeCursor.execute(query, vals)
-        except Exception as e:
-            self.__initWrite()
-            self.writeCursor.execute(query, vals)
+        self.__initWrite()
+        self.writeCursor.execute(query, vals)
            
         if not read:
             self.db_write.commit()
