@@ -4,10 +4,8 @@ from flask import Flask, render_template, send_file, send_from_directory
 app = Flask(__name__)
 
 ENDP = os.environ["ENDPOINT"]
-ENDP_STATIC = os.environ["ENDPOINT_STATIC"]
-
 API_ENDPOINT = f"http://{ENDP}"
-API_ENDPOINT_STATIC = f"http://{ENDP_STATIC}"
+
 
 @app.route("/static/<path:path>", methods=["GET"])
 def serve_static(path):

@@ -150,7 +150,7 @@ def insertcar():
 @app.route("/edit/<id>", methods=["POST"])
 def editcar(id):
     if not id.isdigit():
-        return "Invalid adid provided!", 400 
+        return "Invalid adid provided!", 400
     else:
         id = int(id)
 
