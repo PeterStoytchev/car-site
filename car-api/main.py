@@ -62,8 +62,11 @@ def getcarlist(brand_id):
     for x in models:
         data = db.ReadQuery("SELECT adid,model,year,km,bhp,email,price FROM cars WHERE model = %s", [x[0]])
         for y in data:
-            img = db.ReadQuery("SELECT imgsrc FROM imglist WHERE adid = %s ORDER BY imgid ASC", [y[0]])[0][0]
-            img = str(requests.get(f"http://{IMG_ENDPOINT}/{img}").content).split("'")[1]
+            try:
+                img = db.ReadQuery("SELECT imgsrc FROM imglist WHERE adid = %s ORDER BY imgid ASC", [y[0]])[0][0]
+                img = str(requests.get(f"http://{IMG_ENDPOINT}/{img}").content).split("'")[1]
+            except Exception as e:
+                img = ""
             cars.append(
                 {
                     "id": y[0],
@@ -137,7 +140,7 @@ def insertcar():
         app.logger.info(f"Exception when trying to add a new car to the site:\n{e}")
         return "500"
 
-    index = db.ReadQuery("SELECT adid FROM cars ORDER BY adid DESC LIMIT 1")[0][0]
+    index = db.ReadQueryMaster("SELECT adid FROM cars ORDER BY adid DESC LIMIT 1")[0][0]
 
     insert_sql_img = """INSERT INTO imglist(adid,imgsrc) VALUES (%s,%s)"""
     for x in req["imgsrc"]:

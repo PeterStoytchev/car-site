@@ -29,8 +29,11 @@ class DatabaseAssistant:
         except Exception as e:
             self.__initRead()
             self.readCursor.execute(query, vals)
-        
+            
         return self.readCursor.fetchall()
+
+    def ReadQueryMaster(self, query, vals=[]):
+        return self.WriteQuery(query, vals)
 
     def WriteQuery(self, query, vals=[]):
         try:
