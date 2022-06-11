@@ -9,7 +9,7 @@ class DatabaseAssistant:
             password= os.environ["dbPasswdPod"],
             database= os.environ["dbNamePod"]
         )
-        self.readCursor = self.db_read.cursor(buffered=True)
+        self.readCursor = self.db_read.cursor()
 
     def __initWrite(self):
         self.db_write = mysql.connector.connect(
@@ -18,7 +18,7 @@ class DatabaseAssistant:
             password= os.environ["dbPasswdMaster"],
             database= os.environ["dbNameMaster"]
         )
-        self.writeCursor = self.db_write.cursor(buffered=True)
+        self.writeCursor = self.db_write.cursor()
 
 
     def ReadQuery(self, query, vals=[]):
@@ -31,8 +31,11 @@ class DatabaseAssistant:
         return self.WriteQuery(query, vals, True)
 
     def WriteQuery(self, query, vals=[], read=False):
-        self.__initWrite()
-        self.writeCursor.execute(query, vals)
+        try:
+            self.writeCursor.execute(query, vals)
+        except Exception as e:
+            self.__initWrite()
+            self.writeCursor.execute(query, vals)
            
         if not read:
             self.db_write.commit()
