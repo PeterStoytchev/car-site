@@ -37,7 +37,6 @@ class DatabaseAssistant:
             self.__initWrite()
             self.writeCursor.execute(query, vals)
            
-        if not read:
-            self.db_write.commit()
-        else:
+        self.db_write.commit()
+        if read == True:
             return self.writeCursor.fetchall()
