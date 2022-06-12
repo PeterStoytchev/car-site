@@ -2,7 +2,7 @@ from tkinter import *
 from flask import *
 import requests
 
-ENDP = "192.168.1.114:8080"
+ENDP = "carsite.shop:8080"
 API_ENDPOINT = f"http://{ENDP}"
 
 
@@ -12,64 +12,72 @@ root.title("Add car AD")
 root.geometry("600x450")
 
 # Input boxes & label
-brand = Entry(root, width=50)
-brand.place(x=95, y=50)
-brand_label = Label(root, text="Brand:")
-brand_label.place(x=20, y=50)
+bhp = Entry(root, width=50)
+bhp.place(x=160, y=50)
+bhp_label = Label(root, text="Brake HorsePower (BHP):")
+bhp_label.place(x=20, y=50)
 
-model = Entry(root, width=50)
-model.place(x=95, y=75)
-model_label = Label(root, text="Model:")
-model_label.place(x=20, y=75)
+cardescr = Entry(root, width=50)
+cardescr.place(x=160, y=75)
+cardescr_label = Label(root, text="Description:")
+cardescr_label.place(x=20, y=75)
 
-year = Entry(root, width=50)
-year.place(x=95, y=100)
-year_label = Label(root, text="Year:")
-year_label.place(x=20, y=100)
+emaill = Entry(root, width=50)
+emaill.place(x=160, y=100)
+emaill_label = Label(root, text="Email:")
+emaill_label.place(x=20, y=100)
 
 km = Entry(root, width=50)
-km.place(x=95, y=125)
-km_label = Label(root, text="KM:")
+km.place(x=160, y=125)
+km_label = Label(root, text="Km:")
 km_label.place(x=20, y=125)
 
-descr = Entry(root, width=50)
-descr.place(x=95, y=150)
-descr_label = Label(root, text="Description:")
-descr_label.place(x=20, y=150)
+modell = Entry(root, width=50)
+modell.place(x=160, y=150)
+modell_label = Label(root, text="Model(<1 - 24>):")
+modell_label.place(x=20, y=150)
 
-id = Entry(root, width=50)
-id.place(x=95, y=175)
-id_label = Label(root, text="id:")
-id_label.place(x=20, y=175)
+price = Entry(root, width=50)
+price.place(x=160, y=175)
+price_label = Label(root, text="price:")
+price_label.place(x=20, y=175)
 
-img = Entry(root, width=50)
-img.place(x=95, y=200)
-img_label = Label(root, text="img(<link>):")
-img_label.place(x=20, y=200)
-img_label2 = Label(root, text="Please seperate the links using <,> if you have multiple pics", fg="red")
-img_label2.place(x=20, y=220)
+year = Entry(root, width=50)
+year.place(x=160, y=200)
+year_label = Label(root, text="year:")
+year_label.place(x=20, y=200)
+
+# img = Entry(root, width=50)
+# img.place(x=95, y=200)
+# img_label = Label(root, text="img(<link>):")
+# img_label.place(x=20, y=200)
+# img_label2 = Label(root, text="Please seperate the links using <,> if you have multiple pics", fg="red")
+# img_label2.place(x=20, y=220)
 
 
 # What to do when btn is clicked
 img_list = []
 def btn_clicked():
-    bt = brand.get()
-    mo = model.get()
-    ye = year.get()
+    bh = bhp.get()
+    ca = cardescr.get()
+    em = emaill.get()
     k_m = km.get()
-    de = descr.get()
-    im = img.get()
-    i_d=id.get()
+    mo = modell.get()
+    pr = price.get()
+    ye = year.get()
 
-    items = {"brand":bt,
-            "cardescr":de,
-            "imgs":im,
+    items = {
+            "bhp":bh,
+            "cardescr":ca,
+            "email":em,
             "km":k_m,
             "model":mo,
-            "year":ye}
-    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-    resp = requests.post(f"{API_ENDPOINT}/edit/1",data=json.dumps(items), headers=headers)
-    print(resp.content)
+            "price":pr,
+            "year":ye
+            }
+    header = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+    requests.post(f"{API_ENDPOINT}/edit/{mo}",data=json.dumps(items), headers=header)
+
 
 # BTN
 btn = Button(root, text="Upload to the website!", command=btn_clicked)
