@@ -18,7 +18,7 @@ class DatabaseAssistant:
             password= os.environ["dbPasswdMaster"],
             database= os.environ["dbNameMaster"]
         )
-        self.writeCursor = self.db_write.cursor()
+        
 
 
     def ReadQuery(self, query, vals=[]):
@@ -32,9 +32,11 @@ class DatabaseAssistant:
 
     def WriteQuery(self, query, vals=[], read=False):
         try:
+            self.writeCursor = self.db_write.cursor()
             self.writeCursor.execute(query, vals)
         except Exception as e:
             self.__initWrite()
+            self.writeCursor = self.db_write.cursor()
             self.writeCursor.execute(query, vals)
            
         self.db_write.commit()
