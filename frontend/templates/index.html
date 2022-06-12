@@ -7,7 +7,6 @@
   <title>Car website</title>
   <meta name='viewport' content='width=device-width, initial-scale=1'>
   <link rel='stylesheet' type='text/css' media='screen' href='static/main.css'>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
 
 <body>
@@ -33,9 +32,9 @@
       </select>
 
       <select name="year" id="year">
-        <option disabled selected>Yeah</option>
+        <option disabled selected>Year</option>
         <option disabled>------------</option>
-        {% for year in range(2000, 2023) %}
+        {% for year in range(1980, 2023) %}
         <option value="{{year}}">{{year}}</option>"
         {% endfor %}
       </select>
@@ -59,7 +58,7 @@
       <select name="price" id="price">
         <option disabled selected>Price</option>
         <option disabled>------------</option>
-        {% for price in range(0, 900000, 500) %}
+        {% for price in range(0, 300000, 500) %}
         <option value="{{price}}">{{price}}</option>"
         {% endfor %}
       </select>
@@ -75,7 +74,12 @@
       {% for car in cars %}
   
 
-    <p id="ad">Model: {{models[car.model]}} Year: {{car.year}} Milage: {{car.km}} Horsepower: {{car.bhp}} Price: {{car.price}}</p><img src="{{car.img}}" id="carbb">
+    <p id="ad">
+      Model: {{models[car.model]}} Year: {{car.year}} Milage: {{car.km}} Horsepower: {{car.bhp}} Price: {{car.price}}
+      <img style="width: 100%" src="{{car.img}}">
+      <a href="/carAd/{{car.id}}"><button id="carAd">More info</button></a></p>
+    
+    
     <br>
       {% endfor %}
 

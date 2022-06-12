@@ -198,5 +198,10 @@ def deleteAllDEL():
 
     return redirect(url_for("root"))
 
+@app.route("/carAd/<id>", methods=["GET"])
+def carAd(id):
+    data = json.loads(requests.get(f"{API_ENDPOINT}/car/" + id).content)
+    return render_template("carad.html", car=data)
+
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")
