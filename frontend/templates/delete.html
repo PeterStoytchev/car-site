@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel='stylesheet' type='text/css' media='screen' href='static/delete.css'>
+    <title>Delete</title>
+</head>
+
+
+<body>
+    <div id="img">
+        <img src="static/company.png">
+      </div>
+      <h2 id="postad">Enter your email to delete all your ads</h2>
+    <form action="/deleteAll" method="POST">
+        Email: <input type="email" name="email" id="email"><br>
+        <input type="submit" value="Submit" id="subbmit">
+    </form>
+
+</body>
+
+<footer id="footer">
+    <p>This website was created by Peter Stoychev, Eris Rahimi, Ryan Smith, founders of Group 14 Inc. &copy;</p>
+  </footer>
+</html>

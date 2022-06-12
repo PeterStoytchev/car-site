@@ -17,10 +17,7 @@ def serve_static(path):
 
 @app.route("/", methods=["GET", "DELETE"])
 def root():
-    if request.method == "DELETE":
-        carId=request.args.get("carId")
-        requests.delete(f"{API_ENDPOINT}/deletecar/" + carId)
-        return redirect(url_for("root"))
+    
 
     content = json.loads(requests.get(f'{API_ENDPOINT}/brands').content)
     names = content["names"]
@@ -30,8 +27,18 @@ def root():
         brand = request.args["brand"]
         year = request.args["year"] if "year" in request.args else None
         km = request.args["km"] if "km" in request.args else None
+        bhp = request.args["bhp"] if "bhp" in request.args else None
+        price = request.args["price"] if "price" in request.args else None
 
         carlist = json.loads(requests.get(f"{API_ENDPOINT}/carlist/{brand}").content)
+        models_raw = json.loads(requests.get(f"{API_ENDPOINT}/models/{brand}").content)
+        
+        modelIds = models_raw["ids"]
+        modelNames = models_raw["names"]
+        models = {}
+        for i in range(0, len(modelIds)):
+            models[modelIds[i]] = modelNames[i]
+        
         found=[]
         for car in carlist:
             add=False
@@ -44,10 +51,22 @@ def root():
                     add=True
                 else:
                     add=False
+            if not bhp == None and add == True:
+                if car["bhp"] <= int(bhp):
+                    add=True
+                else:
+                    add=False
+            if not price == None and add == True:
+                if car["price"] <= int(price):
+                    add=True
+                else:
+                    add=False
+            
+            
 
             if add:
                 found.append(car)
-        return render_template("index.html", brands = names, ids= ids, cars=found)
+        return render_template("index.html", brands = names, ids= ids, models=models, cars=found)
 
     return render_template("index.html", brands=names, ids=ids)
 
@@ -99,7 +118,6 @@ def adadd():
         else:
             brandId= ids[0]
         
-        print("brandId", brandId)
         models=json.loads(requests.get(f"{API_ENDPOINT}/models/{brandId}").content)
         modelNames= models["names"]
         modelIds= models["ids"]
@@ -111,17 +129,19 @@ def adadd():
             modelIds=modelIds, 
             brandId=int(brandId))
     elif request.method == "POST":
-        requiredArgs=["brand", "model", "year", "km", "desc", "email"]
+        requiredArgs=["brands", "model", "year", "km", "desc", "email", "bhp", "price"]
         for arg in requiredArgs:
             if request.form.get(arg) == None:
                 return redirect(url_for("adadd", message="Please fill out the " + arg + "field"))
 
-        brand = request.form.get("brand")
+        brand = request.form.get("brands")
         model = request.form.get("model")
         year = request.form.get("year")
         km = request.form.get("km")
         desc = request.form.get("desc")
         email = request.form.get("email")
+        bhp = request.form.get("bhp")
+        price = request.form.get("price")
 
         if 'img' not in request.files:
             print("UNHANDLED ERROR")
@@ -141,10 +161,15 @@ def adadd():
             "km": int(km),
             "cardescr": desc,
             "email": email,
+            "bhp": int(bhp),
+            "price": int(price),
             "imgsrc": files
+
         }
         data = json.dumps(data)
-        resp = requests.post(f"{API_ENDPOINT}/car", data=data)
+        headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+        resp = requests.post(f"{API_ENDPOINT}/car", data=data, headers=headers)
+
 
         if "adid" not in str(resp.content):
             print("ERROR")
@@ -155,6 +180,23 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+@app.route("/deleteAll", methods=["GET"])
+def deleteAllGET():
+    return render_template("delete.html")
+
+@app.route("/deleteAll", methods=["POST"])
+def deleteAllDEL():
+    data = {
+        "email": request.form.get("email")
+    }
+
+    data = json.dumps(data)
+    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+    resp = requests.delete(f"{API_ENDPOINT}/deluser", data=data, headers=headers)
+
+    return redirect(url_for("root"))
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")

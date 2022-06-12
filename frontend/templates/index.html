@@ -25,54 +25,62 @@
 
     <form method="GET">
       <select name="brand" id="brand">
+        <option disabled selected>Brand</option>
+        <option disabled>------------</option>
         {% for id in ids %}
         <option value="{{id}}">{{ brands[loop.index0] }}</option>
         {% endfor %}
       </select>
 
       <select name="year" id="year">
+        <option disabled selected>Yeah</option>
+        <option disabled>------------</option>
         {% for year in range(2000, 2023) %}
         <option value="{{year}}">{{year}}</option>"
         {% endfor %}
       </select>
 
       <select name="km" id="km">
+        <option disabled selected>Km</option>
+        <option disabled>------------</option>
         {% for km in range(50000, 550000, 50000) %}
         <option value="{{km}}">{{km}}</option>
         {% endfor %}
       </select>
+
+      <select name="bhp" id="bhp">
+        <option disabled selected>Bhp</option>
+        <option disabled>------------</option>
+        {% for bhp in range(50, 1000, 50) %}
+        <option value="{{bhp}}">{{bhp}}</option>"
+        {% endfor %}
+      </select>
+
+      <select name="price" id="price">
+        <option disabled selected>Price</option>
+        <option disabled>------------</option>
+        {% for price in range(0, 900000, 500) %}
+        <option value="{{price}}">{{price}}</option>"
+        {% endfor %}
+      </select>
+
       <input type="submit" value="Submit" id="subbutt">
     </form>
 
     <h3 id="postad">Looking to sell your car? Post an ad!</h3>
     <a href="/new"><button id="post">Post a new ad</button></a>
+    <h3 id="delad">Delete all ads you have posted</h3>
+    <a href="/deleteAll"><button id="delete">Delete ads</button></a>
     {% if cars %}
       {% for car in cars %}
-        <p>
-          <button data-carId="{{car.id}}" id="delete">Delete ad</button>
-          Model: {{car.model}} Year: {{car.year}} Mileage: {{car.km}}
-        </p>
-    <p>Model: {{car.model}} Year: {{car.year}} Milage: {{car.km}}</p><img src="{{car.img}}" id="carbb">
+  
+
+    <p id="ad">Model: {{models[car.model]}} Year: {{car.year}} Milage: {{car.km}} Horsepower: {{car.bhp}} Price: {{car.price}}</p><img src="{{car.img}}" id="carbb">
     <br>
       {% endfor %}
 
       {% endif %}
 
-  <script>
-    $(document).ready(function() {
-      $("#delete").click(function(){
-      if (confirm("Are you sure you want to delete this ad?"))
-        
-          $.ajax({
-            url: window.location.href,
-            type: "DELETE",
-            data: {
-              "cardId": parseInt($(this).data("cardId"))
-            }
-          })
-      })
-    })
-  </script>
   </div>
     {% endblock %}
 </body>
