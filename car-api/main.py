@@ -174,7 +174,10 @@ def deluser():
     req = request.json
     
     for x in db.ReadQuery("SELECT adid FROM cars WHERE email = %s", [req["email"]]):
-       db.WriteQuery("DELETE FROM imglist WHERE adid = %s", [x[0]])
+        for y in db.ReadQuery("SELECT imgsrc FROM imglist WHERE adid = %s", [x[0]]):
+            requests.delete(f"http://{IMG_ENDPOINT}/{y[0]}")
+           
+        db.WriteQuery("DELETE FROM imglist WHERE adid = %s", [x[0]])
     
     db.WriteQuery("DELETE FROM cars WHERE email = %s", [req["email"]])
 
