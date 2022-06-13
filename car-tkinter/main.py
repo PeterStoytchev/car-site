@@ -47,14 +47,6 @@ year.place(x=160, y=200)
 year_label = Label(root, text="year:")
 year_label.place(x=20, y=200)
 
-# img = Entry(root, width=50)
-# img.place(x=160, y=225)
-# img_label = Label(root, text="img(<link>):")
-# img_label.place(x=20, y=225)
-# img_label2 = Label(root, text="Please seperate the links using <,> if you have multiple pics", fg="red")
-# img_label2.place(x=153, y=245)
-
-
 # What to do when btn is clicked
 img_list = []
 def btn_clicked():

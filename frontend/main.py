@@ -188,6 +188,3 @@ def deleteAllDEL():
 def carAd(id):
     data = json.loads(requests.get(f"{API_ENDPOINT}/car/" + id).content)
     return render_template("carad.html", car=data)
-
-if __name__ == "__main__":
-    app.run(debug=False, host="0.0.0.0")
