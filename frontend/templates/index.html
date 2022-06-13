@@ -68,8 +68,7 @@
 
     <h3 id="postad">Looking to sell your car? Post an ad!</h3>
     <a href="/new"><button id="post">Post a new ad</button></a>
-    <h3 id="delad">Delete all ads you have posted</h3>
-    <a href="/deleteAll"><button id="delete">Delete ads</button></a>
+    
     {% if cars %}
       {% for car in cars %}
   
@@ -84,6 +83,8 @@
       {% endfor %}
 
       {% endif %}
+      <h3 id="delad">Delete all ads you have posted</h3>
+      <a href="/deleteAll"><button id="delete">Delete ads</button></a>
 
   </div>
     {% endblock %}

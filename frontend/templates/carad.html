@@ -12,7 +12,13 @@
         <img src="/static/company.png" id="compid">
       </div>
     <h3 id="postad">More info</h3>
-      <p id="info">Model: {{car.model}}<br> Year: {{car.year}}<br> Milage: {{car.km}} KM<br> Horsepower: {{car.bhp}} BHP<br> Price: €{{car.price}}<br> Contact: {{car.email}}</p>
+      <p id="info">Model: {{car.model}}<br> Year: {{car.year}}<br> Milage: {{car.km}} KM<br> Horsepower: {{car.bhp}} BHP<br> Price: €{{car.price}}
+        <br>
+        Description by the owner
+        <br>
+        {{car.cardescr}}
+        <br>
+         Contact: {{car.email}}<br> </p>
       <h4 id="picturetext">Pictures</h4>
 
       {% for img in car.imgs %}

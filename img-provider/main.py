@@ -10,7 +10,7 @@ def root_post():
     file = request.files['file']
     filename = str(uuid.uuid4().hex)
 
-    tmp_path = os.path.join("imgs", f"{filename}.tmp")
+    tmp_path = f"{filename}.tmp"
     file.save(tmp_path)
 
     img = Image.open(tmp_path)
@@ -23,7 +23,7 @@ def root_post():
     elif orig_size < new_size:
         img = img.resize((960,540), Image.Resampling.LANCZOS)
 
-    webp_path = os.path.join("imgs", f"{filename}.webp")
+    webp_path = f"{filename}.webp"
     webp.save_image(img, webp_path, quality=75)
 
     s3 = boto3.client('s3')
