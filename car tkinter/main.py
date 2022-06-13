@@ -34,7 +34,7 @@ km_label.place(x=20, y=125)
 
 modell = Entry(root, width=50)
 modell.place(x=160, y=150)
-modell_label = Label(root, text="Model(<1>):")
+modell_label = Label(root, text="Model(<1-24>):")
 modell_label.place(x=20, y=150)
 
 price = Entry(root, width=50)
@@ -48,11 +48,11 @@ year_label = Label(root, text="year:")
 year_label.place(x=20, y=200)
 
 # img = Entry(root, width=50)
-# img.place(x=95, y=200)
+# img.place(x=160, y=225)
 # img_label = Label(root, text="img(<link>):")
-# img_label.place(x=20, y=200)
+# img_label.place(x=20, y=225)
 # img_label2 = Label(root, text="Please seperate the links using <,> if you have multiple pics", fg="red")
-# img_label2.place(x=20, y=220)
+# img_label2.place(x=153, y=245)
 
 
 # What to do when btn is clicked
@@ -65,6 +65,7 @@ def btn_clicked():
     mo = modell.get()
     pr = price.get()
     ye = year.get()
+    # im = img.get()
 
     items = {
             "bhp":bh,
