@@ -1,0 +1,162 @@
+body
+{
+    text-align: center;
+	background-color: #000000;
+	color: #37e220;
+	font-family: monospace;
+}
+
+#img
+{
+	width: 10%;
+	
+}
+
+#carbb
+{
+	width: 60%;
+}
+
+#subbutt
+{
+	margin-top: 2%;
+	text-align: center;
+	font-size: 14px;
+	background-color: #000000;
+	color: #ffffff;
+	font-family: monospace;
+	padding: 1%;
+	border-radius: 1px;
+	border: 2px solid #37e220;
+	opacity: 0.9;	
+}
+
+#brand
+{
+	text-align: center;
+	font-size: 14px;
+	background-color: #000000;
+	color: #ffffff;
+	font-family: monospace;
+	padding: 1%;
+	border-radius: 1px;
+	border: 2px solid #37e220;
+	opacity: 0.9;
+}
+
+#year
+{
+	text-align: center;
+	font-size: 14px;
+	background-color: #000000;
+	color: #ffffff;
+	font-family: monospace;
+	padding: 1%;
+	border-radius: 1px;
+	border: 2px solid #37e220;
+	opacity: 0.9;
+}
+
+#km
+{
+	text-align: center;
+	font-size: 14px;
+	background-color: #000000;
+	color: #ffffff;
+	font-family: monospace;
+	padding: 1%;
+	border-radius: 1px;
+	border: 2px solid #37e220;
+	opacity: 0.9;
+}
+
+#bhp
+{
+	text-align: center;
+	font-size: 14px;
+	background-color: #000000;
+	color: #ffffff;
+	font-family: monospace;
+	padding: 1%;
+	border-radius: 1px;
+	border: 2px solid #37e220;
+	opacity: 0.9;
+}
+
+#price
+{
+	text-align: center;
+	font-size: 14px;
+	background-color: #000000;
+	color: #ffffff;
+	font-family: monospace;
+	padding: 1%;
+	border-radius: 1px;
+	border: 2px solid #37e220;
+	opacity: 0.9;
+}
+
+#post
+{
+	text-align: center;
+	font-size: 16px;
+	background-color: #000000;
+	color: #ffffff;
+	font-family: monospace;
+	padding: 1%;
+	border-radius: 1px;
+	border: 2px solid #37e220;
+	opacity: 0.9;
+}
+
+#ad
+{
+	width: 100%;
+	font-size: 18px;
+	padding: 1%;
+	border-radius: 1px;
+	border: 2px solid #37e220;
+}
+
+#postad
+{
+	margin-top: 5%;
+}
+
+#delad
+{
+	margin-top: 7%;
+}
+
+#delete
+{
+	margin-bottom: 10%;
+	text-align: center;
+	font-size: 16px;
+	background-color: #000000;
+	color: #ffffff;
+	font-family: monospace;
+	padding: 1%;
+	border-radius: 1px;
+	border: 2px solid #37e220;
+	opacity: 0.9;
+}
+
+#carAd
+{
+	text-align: center;
+	font-size: 16px;
+	background-color: #000000;
+	color: #ffffff;
+	font-family: monospace;
+	border: 2px solid #37e220;
+	opacity: 0.9;
+}
+
+#footer {
+	text-align: center;
+	position: relative;
+	bottom:0;
+	width:98%;
+	opacity: 0.9;
+}

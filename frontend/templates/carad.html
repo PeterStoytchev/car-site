@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel='stylesheet' type='text/css' media='screen' href='/static/carad.css'>
+    <title>Car ad</title>
+</head>
+<body>
+    <div>
+        <img src="/static/company.png" id="compid">
+      </div>
+    <h3 id="postad">More info</h3>
+      <p id="info">Model: {{car.model}}<br> Year: {{car.year}}<br> Milage: {{car.km}}<br> Horsepower: {{car.bhp}}<br> Price: {{car.price}}<br> Contact: {{car.email}}</p>
+      <h4 id="picturetext">Pictures</h4>
+
+      {% for img in car.imgs %}
+      <img src="{{img}}">
+      {% endfor %}
+
+</body>
+</html>
