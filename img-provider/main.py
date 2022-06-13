@@ -41,4 +41,7 @@ def root_get(id):
     return s3.generate_presigned_url('get_object', Params={'Bucket': "arn:aws:s3::326782393948:accesspoint/m6ow8xby39me6.mrap", 'Key': f"{id}.webp"}, ExpiresIn=60), 200
 
 if __name__ == "__main__":
+    if not os.path.exists("imgs"):
+        os.mkdir("imgs")
+    
     app.run(debug=True, host="0.0.0.0", port=8081)

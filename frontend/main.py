@@ -1,15 +1,14 @@
-import os
-import requests
-import json
-from flask import Flask, request, render_template, send_file, send_from_directory, redirect, url_for
+import os, requests, json
+from flask import Flask, request, render_template, send_from_directory, redirect, url_for
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
-#ENDP = "127.0.0.1:8080"
-
 ENDP = os.environ["ENDPOINT"]
+ENDP_IMG = os.environ["IMG_ENDPOINT"]
+
 API_ENDPOINT = f"http://{ENDP}"
+IMG_ENDPOINT = f"http://{ENDP_IMG}"
 
 @app.route("/static/<path:path>", methods=["GET"])
 def serve_static(path):
@@ -17,8 +16,6 @@ def serve_static(path):
 
 @app.route("/", methods=["GET", "DELETE"])
 def root():
-    
-
     content = json.loads(requests.get(f'{API_ENDPOINT}/brands').content)
     names = content["names"]
     ids = content["ids"]
@@ -61,8 +58,6 @@ def root():
                     add=True
                 else:
                     add=False
-            
-            
 
             if add:
                 found.append(car)
@@ -144,17 +139,19 @@ def adadd():
         price = request.form.get("price")
 
         if 'img' not in request.files:
-            print("UNHANDLED ERROR")
+            return redirect(url_for("adadd", message="Invalid image!"))
+
         file = request.files['img']
         if file.filename == '':
-            print("UNHANDLED ERROR")
+            return redirect(url_for("adadd", message="Invalid image!"))
 
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save("static/uploads/" + filename)
+        files=[
+            ('file',(secure_filename(file.filename),file.stream,'image/*'))
+        ]
 
-        files=[]
-        files.append(filename)
+        r = requests.post(f"{IMG_ENDPOINT}/", data={}, headers={}, files=files)
+        imglist = [str(r.content).split("'")[1]]
+
         data = {
             "model": int(model),
             "year": int(year),
@@ -163,24 +160,15 @@ def adadd():
             "email": email,
             "bhp": int(bhp),
             "price": int(price),
-            "imgsrc": files
-
+            "imgsrc": imglist
         }
-        data = json.dumps(data)
-        headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-        resp = requests.post(f"{API_ENDPOINT}/car", data=data, headers=headers)
 
+        resp = requests.post(f"{API_ENDPOINT}/car", data=json.dumps(data), headers={'Content-type': 'application/json'})
 
         if "adid" not in str(resp.content):
-            print("ERROR")
-        
+            return redirect(url_for("adadd", message="ERROR!"))
+
         return redirect(url_for("root") + "?posted=true")
-
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
 
 @app.route("/deleteAll", methods=["GET"])
 def deleteAllGET():
@@ -192,9 +180,7 @@ def deleteAllDEL():
         "email": request.form.get("email")
     }
 
-    data = json.dumps(data)
-    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-    resp = requests.delete(f"{API_ENDPOINT}/deluser", data=data, headers=headers)
+    requests.delete(f"{API_ENDPOINT}/deluser", data=json.dumps(data), headers={'Content-type': 'application/json'})
 
     return redirect(url_for("root"))
 
@@ -204,4 +190,4 @@ def carAd(id):
     return render_template("carad.html", car=data)
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0")
+    app.run(debug=False, host="0.0.0.0")

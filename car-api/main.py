@@ -142,7 +142,7 @@ def insertcar():
 
     index = db.ReadQueryMaster("SELECT adid FROM cars ORDER BY adid DESC LIMIT 1")[0][0]
 
-    insert_sql_img = """INSERT INTO imglist(adid,imgsrc) VALUES (%s,%s)"""
+    insert_sql_img = "INSERT INTO imglist(adid,imgsrc) VALUES (%s,%s)"
     for x in req["imgsrc"]:
         vals_img = (index, x)
         db.WriteQuery(insert_sql_img, vals_img)
@@ -174,7 +174,7 @@ def deluser():
     req = request.json
     
     for x in db.ReadQuery("SELECT adid FROM cars WHERE email = %s", [req["email"]]):
-       db.WriteQuery("DELETE FROM imglist WHERE imgid = %s", [x[0]])
+       db.WriteQuery("DELETE FROM imglist WHERE adid = %s", [x[0]])
     
     db.WriteQuery("DELETE FROM cars WHERE email = %s", [req["email"]])
 

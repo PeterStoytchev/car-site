@@ -43,7 +43,7 @@
         Price: <input typ="number" name="price" id="price" required/><br>
         Description: <textarea name="desc" id="desc" cols="30" rows="10" required></textarea><br>
         Contact: <input type="email" name="email" id="email" required><br>
-        Image: <input type="file" name="img" id="img" required><br>
+        Image: <input type="file" accept="image/*" name="img" id="img" required><br>
 
         <input type="submit" value="submit" id="submit">
     </form>
@@ -55,8 +55,6 @@
                 url=loc.origin + loc.pathname + "?brandId=" + $("#brands").val()
                 window.location.href=url
             })
-
-       
     </script>
 </body>
 
