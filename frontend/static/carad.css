@@ -1,0 +1,30 @@
+body
+{
+    text-align: center;
+    width: 100%;
+	font-size: 18px;
+	background-color: #000000;
+	color: #37e220;
+	font-family: monospace;
+}
+
+img 
+{
+	width: 50%;
+}
+
+#compid
+{
+	width: 10%;	
+}
+
+#info
+{
+	line-height: 180%;
+}
+
+#picturetext
+{
+	margin-top: 2%;
+	margin-bottom: 2%;
+}

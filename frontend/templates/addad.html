@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel='stylesheet' type='text/css' media='screen' href='static/addthead.css'>
+    <title>Add ad</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <div id="img">
+        <img src="static/company.png">
+      </div>
+      <h1 id="toptext">Enter the details of your car!</h1>
+</head>
+<body>
+    {% if request.args.get("message") %}
+        <div class="messages" id="message">
+            {{request.args.get("message")}}
+        </div>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data">
+        Brand:
+        <select name="brands" id="brands" required>
+            {% for id in ids %}
+            {% if id == brandId %}
+                    <option value="{{id}}" selected>{{ brands[loop.index0] }}</option>
+                {% else %}
+                <option value="{{id}}">{{ brands[loop.index0] }}</option>
+            {% endif %}
+            {% endfor %}
+
+        </select><br>
+        Model:
+        <select name="model" id="model" required>
+            {% for id in modelIds %}
+                <option value="{{id}}">{{ modelNames[loop.index0] }}</option>
+            {% endfor %}
+        </select><br>
+        Year: <input type="text" name="year" id="year" required/><br>
+        KM: <input typ="number" name="km" id="km" required/><br>
+        Horsepower: <input typ="number" name="bhp" id="bhp" required/><br>
+        Price: <input typ="number" name="price" id="price" required/><br>
+        Description: <textarea name="desc" id="desc" cols="30" rows="10" required></textarea><br>
+        Contact: <input type="email" name="email" id="email" required><br>
+        Image: <input type="file" name="img" id="img" required><br>
+
+        <input type="submit" value="submit" id="submit">
+    </form>
+
+    <script>
+            $("#brands").change(function(event) {
+                console.log("RAN");
+                loc=window.location
+                url=loc.origin + loc.pathname + "?brandId=" + $("#brands").val()
+                window.location.href=url
+            })
+
+       
+    </script>
+</body>
+
+<footer id="footer">
+    <p>This website was created by Peter Stoychev, Eris Rahimi, Ryan Smith, founders of Group 14 Inc. &copy;</p>
+  </footer>
+</html>

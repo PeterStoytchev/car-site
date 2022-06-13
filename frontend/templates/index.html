@@ -1,22 +1,95 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <meta charset='utf-8'>
-    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-    <title>Page Title</title>
-    <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <link rel='stylesheet' type='text/css' media='screen' href='static/main.css'>
+  <meta charset='utf-8'>
+  <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+  <title>Car website</title>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <link rel='stylesheet' type='text/css' media='screen' href='static/main.css'>
 </head>
+
 <body>
-    <h1>Choose a brand:</h1>
-    {% block content %}
-    <div style="width: 50%; margin: auto">
-        {% for id in ids %}
-        <div style="padding: 10px; background-color: #EEE; margin: 20px">
-            <a href= {{ url_for("brand", id=id)}}>{{ brands[loop.index0] }}</a>
-        </div>
-        {% endfor %}
+  <div>
+    <img src="static/company.png" id="img">
+  </div>
+  <h1>What type of car are you looking for?</h1>
+  {% block content %}
+  <div style="width: 50%; margin: auto">
+    {% if request.args.get("posted") == "true" %}
+    <div class="flashes">
+      Ad posted!
     </div>
+    {% endif %}
+
+    <form method="GET">
+      <select name="brand" id="brand">
+        <option disabled selected>Brand</option>
+        <option disabled>------------</option>
+        {% for id in ids %}
+        <option value="{{id}}">{{ brands[loop.index0] }}</option>
+        {% endfor %}
+      </select>
+
+      <select name="year" id="year">
+        <option disabled selected>Year</option>
+        <option disabled>------------</option>
+        {% for year in range(1980, 2023) %}
+        <option value="{{year}}">{{year}}</option>"
+        {% endfor %}
+      </select>
+
+      <select name="km" id="km">
+        <option disabled selected>Km</option>
+        <option disabled>------------</option>
+        {% for km in range(50000, 550000, 50000) %}
+        <option value="{{km}}">{{km}}</option>
+        {% endfor %}
+      </select>
+
+      <select name="bhp" id="bhp">
+        <option disabled selected>Bhp</option>
+        <option disabled>------------</option>
+        {% for bhp in range(50, 1000, 50) %}
+        <option value="{{bhp}}">{{bhp}}</option>"
+        {% endfor %}
+      </select>
+
+      <select name="price" id="price">
+        <option disabled selected>Price</option>
+        <option disabled>------------</option>
+        {% for price in range(0, 300000, 500) %}
+        <option value="{{price}}">{{price}}</option>"
+        {% endfor %}
+      </select>
+
+      <input type="submit" value="Submit" id="subbutt">
+    </form>
+
+    <h3 id="postad">Looking to sell your car? Post an ad!</h3>
+    <a href="/new"><button id="post">Post a new ad</button></a>
+    <h3 id="delad">Delete all ads you have posted</h3>
+    <a href="/deleteAll"><button id="delete">Delete ads</button></a>
+    {% if cars %}
+      {% for car in cars %}
+  
+
+    <p id="ad">
+      Model: {{models[car.model]}} Year: {{car.year}} Milage: {{car.km}} Horsepower: {{car.bhp}} Price: {{car.price}}
+      <img style="width: 100%" src="{{car.img}}">
+      <a href="/carAd/{{car.id}}"><button id="carAd">More info</button></a></p>
+    
+    
+    <br>
+      {% endfor %}
+
+      {% endif %}
+
+  </div>
     {% endblock %}
 </body>
+
+<footer id="footer">
+  <p>This website was created by Peter Stoychev, Eris Rahimi, Ryan Smith, founders of Group 14 Inc. &copy;</p>
+</footer>
 </html>
