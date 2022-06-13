@@ -2,7 +2,7 @@ FROM python:3.8-slim-buster
 
 WORKDIR /python-docker
 
-RUN pip3 install Flask mysql-connector-python requests
+RUN pip3 install Flask webp boto3 botocore[crt]
 
 COPY . .
 

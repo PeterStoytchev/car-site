@@ -1,1 +1,8 @@
 car-api/venv
+frontend/venv
+img-provider/venv
+img-provider/imgs
+
+frontend/__pycache__/
+car-api/__pycache__/
+img-provider/__pycache__/

@@ -1,53 +1,18 @@
-import os
-import mysql.connector
+import os, logging, requests
+from DatabaseAssistant import DatabaseAssistant
 from flask import Flask, jsonify, request
 
-import logging
-
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__)
 
-# The zero here, is just a placeholder value, until someone calls a route and touches a route,
-# and creates a connection to the db
-db = 0
+IMG_ENDPOINT = os.environ["IMG_ENDPOINT"]
 
-def getcursor():
-    global db
-    
-    try:
-        c = db.cursor()
-        return c
-    except Exception as e:
-        db = mysql.connector.connect(
-            host= os.environ["dbHost"],
-            user= os.environ["dbUser"],
-            password= os.environ["dbPasswd"],
-            database= os.environ["dbName"],
-            connect_timeout=28800
-        )
-
-        c = db.cursor()
-        return c
-
-
-def sqlfetch(query, cursor=-1):
-    if cursor == -1:
-        cursor = getcursor()
-
-    cursor.execute(query)
-    return cursor.fetchall()
-
-def sqlfetchparam(query, vals, cursor=-1):
-    if cursor == -1:
-        cursor = getcursor()
-
-    cursor.execute(query, vals)
-    return cursor.fetchall()
+db = DatabaseAssistant()
 
 @app.route("/brands", methods=["GET"])
 def getbrands():
-    data = sqlfetch(f"""SELECT * FROM brands""")
+    data = db.ReadQuery("SELECT * FROM brands")
     ids = []
     names = []
 
@@ -68,7 +33,7 @@ def getmodelsfrombrand(brand_id):
     else:
         brand_id = int(brand_id)
 
-    data = sqlfetchparam("""SELECT modelid,modelname FROM models WHERE brand = %s""", [brand_id])
+    data = db.ReadQuery("SELECT modelid,modelname FROM models WHERE brand = %s", [brand_id])
     ids = []
     names = []
 
@@ -91,24 +56,27 @@ def getcarlist(brand_id):
     else:
         brand_id = int(brand_id)
 
-    models = sqlfetchparam(f"""SELECT modelid FROM models WHERE brand = %s""", [brand_id])
+    models = db.ReadQuery("SELECT modelid FROM models WHERE brand = %s", [brand_id])
 
     cars = []
-
-    #TODO: Batch execution of querries!
-    
-    cursor = getcursor()
     for x in models:
-        data = sqlfetchparam("""SELECT adid,model,year,km FROM cars WHERE model = %s""", [x[0]], cursor)
+        data = db.ReadQuery("SELECT adid,model,year,km,bhp,email,price FROM cars WHERE model = %s", [x[0]])
         for y in data:
-            img = sqlfetchparam("""SELECT imgsrc FROM imglist WHERE adid = %s ORDER BY imgid ASC""", [y[0]], cursor)[0][0]
+            try:
+                img = db.ReadQuery("SELECT imgsrc FROM imglist WHERE adid = %s ORDER BY imgid ASC", [y[0]])[0][0]
+                img = str(requests.get(f"http://{IMG_ENDPOINT}/{img}").content).split("'")[1]
+            except Exception as e:
+                img = ""
             cars.append(
                 {
                     "id": y[0],
                     "model": y[1],
                     "year": y[2],
                     "km": y[3],
-                    "img": img
+                    "img": img,
+                    "bhp": y[4],
+                    "email": y[5],
+                    "price": y[6]
                 })
 
 
@@ -122,9 +90,8 @@ def getcarfrombrand(id):
     else:
         id = int(id)
 
-    cursor = getcursor()
-    modelid = sqlfetchparam("""SELECT model FROM cars WHERE adid = %s""", [id], cursor)[0][0]
-    brandid = sqlfetchparam("""SELECT brand FROM models WHERE modelid = %s""", [modelid], cursor)[0][0]
+    modelid = db.ReadQuery("SELECT model FROM cars WHERE adid = %s", [id])[0][0]
+    brandid = db.ReadQuery("SELECT brand FROM models WHERE modelid = %s", [modelid])[0][0]
 
     return jsonify({"brandid": brandid})
 
@@ -135,18 +102,17 @@ def getcar(id):
     else:
         id = int(id)
     
-    cursor = getcursor()
-    
-    data = sqlfetchparam("""SELECT * FROM cars WHERE adid = %s""", [id], cursor)[0]
+    data = db.ReadQuery("SELECT * FROM cars WHERE adid = %s", [id])[0]
 
-    modeldata = sqlfetchparam("SELECT brand,modelname FROM models WHERE modelid = %s", [data[1]], cursor)[0]
+    modeldata = db.ReadQuery("SELECT brand,modelname FROM models WHERE modelid = %s", [data[1]])[0]
     model = modeldata[1]
 
-    brand = sqlfetchparam("SELECT name FROM brands WHERE carid = %s", [modeldata[0]], cursor)[0][0]
+    brand = db.ReadQuery("SELECT name FROM brands WHERE carid = %s", [modeldata[0]])[0][0]
 
     imgs = [] 
-    for x in sqlfetchparam("SELECT imgsrc FROM imglist WHERE adid = %s", [data[0]], cursor):
-        imgs.append(x[0])
+    for x in db.ReadQuery("SELECT imgsrc FROM imglist WHERE adid = %s", [data[0]]):
+        actual_link = str(requests.get(f"http://{IMG_ENDPOINT}/{x[0]}").content).split("'")[1]
+        imgs.append(actual_link)
 
     return jsonify(
     {
@@ -154,59 +120,65 @@ def getcar(id):
         "model": model,
         "year": data[2],
         "km": data[3],
-        "cardescr": data[4],
+        "bhp": data[4],
+        "price": data[5],
+        "cardescr": data[6],
+        "email": data[7],
         "imgs": imgs
     })
 
 @app.route("/car", methods=["POST"])
 def insertcar():
-    cursor = getcursor()
-
     req = request.json
 
-    insert_sql = """INSERT INTO `cars`(`model`, `year`, `km`, `cardescr`) VALUES (%s,%s,%s,%s)"""
-    vals = (req["model"], req["year"], req["km"], req["cardescr"])
+    insert_sql = "INSERT INTO cars(model, year, km, bhp, email, price, cardescr) VALUES (%s,%s,%s,%s,%s,%s,%s)"
+    vals = (req["model"], req["year"], req["km"], req["bhp"], req["email"], req["price"], req["cardescr"])
 
     try:
-        cursor.execute(insert_sql, vals)
-        db.commit()
+        db.WriteQuery(insert_sql, vals)
     except Exception as e:
         app.logger.info(f"Exception when trying to add a new car to the site:\n{e}")
         return "500"
 
-    index = sqlfetch("SELECT adid FROM cars ORDER BY adid DESC LIMIT 1", cursor)[0][0]
+    index = db.ReadQueryMaster("SELECT adid FROM cars ORDER BY adid DESC LIMIT 1")[0][0]
 
     insert_sql_img = """INSERT INTO imglist(adid,imgsrc) VALUES (%s,%s)"""
     for x in req["imgsrc"]:
         vals_img = (index, x)
-        cursor.execute(insert_sql_img, vals_img)
-
-    db.commit()
+        db.WriteQuery(insert_sql_img, vals_img)
 
     return jsonify({"adid": index})
 
 @app.route("/edit/<id>", methods=["POST"])
 def editcar(id):
     if not id.isdigit():
-        return "Invalid adid provided!", 400 
+        return "Invalid adid provided!", 400
     else:
         id = int(id)
 
-    cursor = getcursor()
     req = request.json
 
-    update_sql = """UPDATE cars SET model=%s, year=%s, km=%s, cardescr=%s WHERE adid=%s"""
-    vals = (req["model"], req["year"], req["km"], req["cardescr"], id)
+    update_sql = "UPDATE cars SET model=%s, year=%s, km=%s, cardescr=%s, price=%s, email=%s, bhp=%s WHERE adid=%s"
+    vals = (req["model"], req["year"], req["km"], req["cardescr"], req["price"], req["email"], req["bhp"], id)
 
     try:
-        cursor.execute(update_sql, vals)
-        db.commit()
+        db.WriteQuery(update_sql, vals)
     except Exception as e:
         app.logger.info(f"Exception when trying to add a new car to the site:\n{e}")
         return "Exception when trying to add a new car to the site!", 500
 
-    db.commit()
+    return "", 200
+
+@app.route("/deluser", methods=["DELETE"])
+def deluser():
+    req = request.json
+    
+    for x in db.ReadQuery("SELECT adid FROM cars WHERE email = %s", [req["email"]]):
+       db.WriteQuery("DELETE FROM imglist WHERE imgid = %s", [x[0]])
+    
+    db.WriteQuery("DELETE FROM cars WHERE email = %s", [req["email"]])
+
     return "", 200
 
 if __name__ == "__main__":
-    app.run(debug=False, host="0.0.0.0", port=5001)
+    app.run(debug=True, host="0.0.0.0", port=5001)
