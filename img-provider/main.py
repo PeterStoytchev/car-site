@@ -43,7 +43,10 @@ def root_get(id):
 @app.route("/<id>", methods=["DELETE"])
 def root_del(id):
     s3 = boto3.client('s3')
-    s3.Object("arn:aws:s3::326782393948:accesspoint/m6ow8xby39me6.mrap", f"{id}.webp").delete()
+    s3.delete_object(
+        Bucket="arn:aws:s3::326782393948:accesspoint/m6ow8xby39me6.mrap",
+        Key=f"{id}.webp"
+    )
     return "Deleted!", 200
 
 if __name__ == "__main__":
