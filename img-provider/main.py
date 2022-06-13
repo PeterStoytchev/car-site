@@ -41,7 +41,7 @@ def root_get(id):
     return s3.generate_presigned_url('get_object', Params={'Bucket': "arn:aws:s3::326782393948:accesspoint/m6ow8xby39me6.mrap", 'Key': f"{id}.webp"}, ExpiresIn=60), 200
 
 @app.route("/<id>", methods=["DELETE"])
-def root_get(id):
+def root_del(id):
     s3 = boto3.client('s3')
     s3.Object("arn:aws:s3::326782393948:accesspoint/m6ow8xby39me6.mrap", f"{id}.webp").delete()
     return "Deleted!", 200
