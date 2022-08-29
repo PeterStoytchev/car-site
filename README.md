@@ -16,5 +16,11 @@ This is what a pod looks like on the inside:
 
 An entire pod can be deployed with the help of the setup.sh script.
 
+# Credit
+System developed by Petar Stoychev (myserver157@gmail.com), Ryan Smith (rsrnsmith@gmail.com) and Edris Rahimi (edris2002210@gmail.com) as a university project.
+
 MySQL master-slave setup based on repo: https://github.com/vbabak/docker-mysql-master-slave
 and article: https://hackernoon.com/mysql-master-slave-replication-using-docker-3pp3u97
+
+# Note
+System is not designed to be used or operated by a person or organization outside of the core developer team. There are parts that are hardcoded, as a result, actual deployment may be problematic. It was meant as a case study project, and may not to operate outside of that, without modification.
